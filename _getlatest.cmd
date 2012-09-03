@@ -1,25 +1,15 @@
 ::| created by swyter!
 ::| requires wget, egrep, sed and 7z. virtualbox is recommended.
 
-@echo off && goto :start
+@echo off
 
-:print
-	echo.   %1
-	goto :eof
-
-:start
 echo [x] Getting latest build number from ^<Reactos.org^>
-::wget http://reactos.org/getbuilds -nv -O revnumber.tmp
 wget http://reactos.org/getbuilds -q -O revnumber.tmp
-::findstr /R /I "\-[0-9][0-9][0-9][0-9][0-9]\)" index.html
-::egrep "-([0-9]*)\)" index.html
-::egrep --regexp="\e\.\g\. ([0-9].*)\)" index.html | sed "s/[)].*//" | sed "s/*([0-9]/\2/"
-::egrep -E "\e\.\g\. [0-9]+" revnumber.tmp | sed -r "s/.*[ ]([0-9]+).*/\1/" > revnumber.tmp
 
 ::we open the HTML file, grep the line with the "e.g XXXXXX" string and then redirect the output to sed.
 ::then sed outputs only the interesting part. All this is saved to a local variable using a hack.
-
-::source: <http://justgeeks.blogspot.com/2008/07/save-output-of-dos-command-to-variable.html>
+ 
+::hack source: <http://justgeeks.blogspot.com/2008/07/save-output-of-dos-command-to-variable.html>
 for /f "tokens=1 delims=" %%A in ('egrep -E "\e\.\g\. [0-9]+" revnumber.tmp ^| sed -r "s/.*[ ]([0-9]+).*/\1/"') do set revNumber=%%A
 
 ::we don't need this anymore.
