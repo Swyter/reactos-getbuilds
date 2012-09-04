@@ -1,7 +1,7 @@
 ::| created by swyter!
 ::| requires wget, egrep, sed and 7z. virtualbox is recommended.
 
-@echo off
+@echo off && title [ Get daily builds from ReactOS.org ] -- by swyter
 
 echo [x] Getting latest build number from ^<Reactos.org^>
 wget http://reactos.org/getbuilds -q -O revnumber.tmp
@@ -10,13 +10,13 @@ wget http://reactos.org/getbuilds -q -O revnumber.tmp
 ::then sed outputs only the interesting part. All this is saved to a local variable using a hack.
  
 ::hack source: <http://justgeeks.blogspot.com/2008/07/save-output-of-dos-command-to-variable.html>
-for /f "tokens=1 delims=" %%A in ('egrep -E "\e\.\g\. [0-9]+" revnumber.tmp ^| sed -r "s/.*[ ]([0-9]+).*/\1/"') do set revNumber=%%A
+for /f "tokens=1 delims=" %%A in ('egrep -E "\e\.\g\. [0-9]+" revnumber.tmp ^| sed -r "s/.*[-]([0-9]+).*/\1/"') do set revNumber=%%A
 
 ::we don't need this anymore.
 del revnumber.tmp
 
             echo ^|   Latest available version: %revNumber%
-Set /p "revNumber=|   Revision number [or press Enter for getting %revNumber%]:  "
+set /p "revNumber=|   Revision number [or press Enter for getting %revNumber%]:  "
 
 echo [x] Downloading ISO
 wget http://iso.reactos.org/bootcd/bootcd-%revNumber%-dbg.7z --no-clobber
@@ -25,7 +25,7 @@ if not exist bootcd-%revNumber%-dbg.iso (
 	echo [x] Extracting it
 	7z x bootcd-%revNumber%-dbg.7z -y
 	
-	if %ERRORLEVEL% NEQ 0 (
+	if %ERRORLEVEL% LEQ 1 (
 		echo [x] Cleaning up...
 		del bootcd-%revNumber%-dbg.7z /F
 	)
@@ -36,9 +36,17 @@ if not exist bootcd-%revNumber%-dbg.iso (
 
 if exist bootcd-%revNumber%-dbg.iso (
 	echo [x] Mounting image and starting virtual machine...
+	
+	::path to your VirtualBox installation...
 	set vbox=R:\Software\VBox
-	%vbox%/VBoxManage.exe storageattach "ROS" --storagectl "Controlador IDE" --port 0 --device 1 --type dvddrive --medium %cd%\bootcd-%revNumber%-dbg.iso
-	%vbox%/VBoxManage.exe startvm ROS --type gui
+	::name of your virtual machine...
+	set mach=ROS
+	::name of the storage controller, usually "IDE controller" or localized...
+	set ctlr=Controlador IDE
+	::-----------------------
+	set PATH=%vbox%
+	VBoxManage storageattach "%mach%" --storagectl "%ctlr%" --port 0 --device 1 --type dvddrive --medium %cd%\bootcd-%revNumber%-dbg.iso
+	VBoxManage startvm       "%mach%" --type gui
 )
 	echo [x] Finished
 echo _______________________________ && echo Done, press any key to exit...
