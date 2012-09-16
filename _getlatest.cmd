@@ -18,10 +18,11 @@ del revnumber.tmp
             echo ^|   Latest available version: %revNumber%
 set /p "revNumber=|   Revision number [or press Enter for getting %revNumber%]:  "
 
-echo [x] Downloading ISO
-wget http://iso.reactos.org/bootcd/bootcd-%revNumber%-dbg.7z --no-clobber
 
 if not exist bootcd-%revNumber%-dbg.iso (
+	echo [x] Downloading ISO
+	wget http://iso.reactos.org/bootcd/bootcd-%revNumber%-dbg.7z --no-clobber
+
 	echo [x] Extracting it
 	7z x bootcd-%revNumber%-dbg.7z -y
 	
@@ -37,16 +38,14 @@ if not exist bootcd-%revNumber%-dbg.iso (
 if exist bootcd-%revNumber%-dbg.iso (
 	echo [x] Mounting image and starting virtual machine...
 	
-	::path to your VirtualBox installation...
-	set vbox=R:\Software\VBox
-	::name of your virtual machine...
-	set mach=ROS
-	::name of the storage controller, usually "IDE controller" or localized...
+	:: name of your virtual machine...
+	set mac=ROS
+	:: name of the storage controller, usually "IDE controller" or localized...
 	set ctlr=Controlador IDE
 	::-----------------------
-	set PATH=%vbox%
-	VBoxManage storageattach "%mach%" --storagectl "%ctlr%" --port 0 --device 1 --type dvddrive --medium %cd%\bootcd-%revNumber%-dbg.iso
-	VBoxManage startvm       "%mach%" --type gui
+	set PATH=%VBOX_INSTALL_PATH%
+	VBoxManage storageattach ROS --storagectl "Controlador IDE" --port 0 --device 1 --type dvddrive --medium %cd%\bootcd-%revNumber%-dbg.iso
+	VBoxManage       startvm ROS --type gui
 )
 	echo [x] Finished
 echo _______________________________ && echo Done, press any key to exit...
