@@ -39,17 +39,19 @@ if not exist bootcd-%revNumber%-dbg.iso (
 	echo ^|   ISO already there...
 )
 
+
+:: name of your virtual machine...
+set mach=ROS
+:: name of the storage controller, usually "IDE controller" or localized...
+set ctlr=Controlador IDE
+::-----------------------
+
 if exist bootcd-%revNumber%-dbg.iso (
 	echo [x] Mounting image and starting virtual machine...
 	
-	:: name of your virtual machine...
-	set mac=ROS
-	:: name of the storage controller, usually "IDE controller" or localized...
-	set ctlr=Controlador IDE
-	::-----------------------
 	set PATH=%VBOX_INSTALL_PATH%
-	VBoxManage storageattach ROS --storagectl "Controlador IDE" --port 0 --device 1 --type dvddrive --medium %cd%\bootcd-%revNumber%-dbg.iso
-	VBoxManage       startvm ROS --type gui
+	VBoxManage storageattach "%mach%" --storagectl "%ctlr%" --port 0 --device 1 --type dvddrive --medium %cd%\bootcd-%revNumber%-dbg.iso
+	VBoxManage       startvm "%mach%" --type gui
 )
 	echo [x] Finished
 echo _______________________________ && echo Done, press any key to exit...
