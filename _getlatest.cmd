@@ -23,13 +23,17 @@ if not exist bootcd-%revNumber%-dbg.iso (
 	echo [x] Downloading ISO
 	wget http://iso.reactos.org/bootcd/bootcd-%revNumber%-dbg.7z --no-clobber
 
-	echo [x] Extracting it
-	7z x bootcd-%revNumber%-dbg.7z -y
-	
-	if %ERRORLEVEL% LEQ 1 (
-		echo [x] Cleaning up...
-		del bootcd-%revNumber%-dbg.7z /F
-	)
+  if exist bootcd-%revNumber%-dbg.7z (
+    echo [x] Extracting it
+    7z x bootcd-%revNumber%-dbg.7z -y
+    
+    if %ERRORLEVEL% LEQ 1 (
+      echo [x] Cleaning up...
+      del bootcd-%revNumber%-dbg.7z /F
+    )
+  ) else (
+    echo ^|   7z not downloaded... bad luck, wait a bit...
+  )
 	
 ) else (
 	echo ^|   ISO already there...
